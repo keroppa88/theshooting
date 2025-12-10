@@ -1249,25 +1249,25 @@
       }
     }
 
-    function drawClearExplosionPhase() {
-      // 背景黒
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+function drawClearExplosionPhase() {
+  // 背景黒
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // 花火爆発描画
-      drawFinalBigExplosion();
+  // 花火爆発描画
+  drawFinalBigExplosion();
 
-      // 爆発終了後の白フラッシュ
-      if (clearFlashTimer > 0) {
-        const alpha = clearFlashTimer / 15;
-        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-    }
+  // 爆発終了後の白フラッシュ
+  if (clearFlashTimer > 0) {
+    const alpha = clearFlashTimer / 15;
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
 
- 　   // 常に自機を最前面に表示
-　　  drawPlayer();
-　}
+  // 最後に自機を必ず描く（常に表示）
+  drawPlayer();
+}
+
     function updateCruisePhase() {
       clearFrame++;
 
@@ -1432,6 +1432,7 @@
   </script>
 </body>
 </html>
+
 
 
 
