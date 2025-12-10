@@ -86,7 +86,7 @@
 
     // ===== エンディング画像 =====
     const endingImage = new Image();
-    endingImage.src = "last.jpg";
+    endingImage.src = "Game/last.jpg";
     let endingImageLoaded = false;
     endingImage.onload = () => { endingImageLoaded = true; };
 
@@ -1265,6 +1265,9 @@
       }
     }
 
+ 　   // 常に自機を最前面に表示
+　　  drawPlayer();
+　}
     function updateCruisePhase() {
       clearFrame++;
 
@@ -1429,6 +1432,7 @@
   </script>
 </body>
 </html>
+
 
 
 
