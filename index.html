@@ -187,6 +187,70 @@
       [0,0,0,0,0,0,0,0,0]
     ];
 
+    const palettes = {
+      moaiFinal: {
+        1: "#ffffff",
+        2: "#c0c0c0",
+        3: "#808080",
+        5: "#000000"
+      },
+      midBoss: {
+        7: "#d7efff",
+        8: "#555555",
+        10: "#666666"
+      },
+      missile: {
+        1: "#ffffff",
+        2: "#ff3333"
+      },
+      player: {
+        1: "#1fd13b",
+        2: "#0a7f1f",
+        3: "#ff3333",
+        4: "#8fd8ff",
+        5: "#555555",
+        6: "#c07020"
+      }
+    };
+
+    function drawPixelArt(map, palette, {
+      width,
+      height,
+      cellSize,
+      flipVertical = false,
+      centered = false
+    } = {}) {
+      const rows = map.length;
+      const cols = map[0].length;
+
+      const cw = cellSize != null ? cellSize : (width / cols);
+      const ch = cellSize != null ? cellSize : (height / rows);
+
+      const totalW = cw * cols;
+      const totalH = ch * rows;
+      const offsetX = centered ? -totalW / 2 : 0;
+      const offsetY = centered ? -totalH / 2 : 0;
+
+      for (let y = 0; y < rows; y++) {
+        const row = flipVertical ? map[rows - 1 - y] : map[y];
+        for (let x = 0; x < cols; x++) {
+          const v = row[x];
+          if (!v) continue;
+
+          const color = palette[v];
+          if (!color) continue;
+
+          ctx.fillStyle = color;
+          ctx.fillRect(
+            offsetX + x * cw,
+            offsetY + y * ch,
+            cw,
+            ch
+          );
+        }
+      }
+    }
+
     // ===== 状態フラグ =====
     let gameStarted  = false;
     let gameOver     = false;
@@ -977,40 +1041,10 @@
 
     // ===== 自機スプライト =====
     function drawPlayerSprite(scale) {
-      const rows = playerMap.length;
-      const cols = playerMap[0].length;
-      const cell = 2 * scale;
-
-      const totalW = cols * cell;
-      const totalH = rows * cell;
-      const offsetX = -totalW / 2;
-      const offsetY = -totalH / 2;
-
-      for (let y = 0; y < rows; y++) {
-        for (let x = 0; x < cols; x++) {
-          const v = playerMap[y][x];
-          if (v === 0) continue;
-
-          let col;
-          switch (v) {
-            case 1: col = "#1fd13b"; break;
-            case 2: col = "#0a7f1f"; break;
-            case 3: col = "#ff3333"; break;
-            case 4: col = "#8fd8ff"; break;
-            case 5: col = "#555555"; break;
-            case 6: col = "#c07020"; break;
-            default: continue;
-          }
-
-          ctx.fillStyle = col;
-          ctx.fillRect(
-            offsetX + x * cell,
-            offsetY + y * cell,
-            cell,
-            cell
-          );
-        }
-      }
+      drawPixelArt(playerMap, palettes.player, {
+        cellSize: 2 * scale,
+        centered: true
+      });
     }
 
     // ===== タイトル画面 =====
@@ -1080,63 +1114,23 @@
         ctx.translate(e.x, e.y);
 
         if (e.isFinalBoss) {
-          const rows = moaiMapFinalBoss.length;
-          const cols = moaiMapFinalBoss[0].length;
-          const cellW = e.w / cols;
-          const cellH = e.h / rows;
-
-          for (let y = 0; y < rows; y++) {
-            for (let x = 0; x < cols; x++) {
-              const v = moaiMapFinalBoss[y][x];
-              if (v === 0) continue;
-
-              let col;
-              if (v === 1)      col = "#ffffff";
-              else if (v === 2) col = "#c0c0c0";
-              else if (v === 3) col = "#808080";
-              else if (v === 5) col = "#000000";
-
-              ctx.fillStyle = col;
-              ctx.fillRect(x * cellW, y * cellH, cellW, cellH);
-            }
-          }
+          drawPixelArt(moaiMapFinalBoss, palettes.moaiFinal, {
+            width: e.w,
+            height: e.h
+          });
 
         } else if (e.isBoss && !e.isFinalBoss) {
-          const rows = midBossMap.length;
-          const cols = midBossMap[0].length;
-          const cellW = e.w / cols;
-          const cellH = e.h / rows;
-
-          for (let y = 0; y < rows; y++) {
-            for (let x = 0; x < cols; x++) {
-              const v = midBossMap[y][x];
-              if (v === 0) continue;
-
-              let col;
-              if (v === 7)       col = "#d7efff";
-              else if (v === 8)  col = "#555555";
-              else if (v === 10) col = "#666666";
-              else continue;
-
-              ctx.fillStyle = col;
-              ctx.fillRect(x * cellW, y * cellH, cellW, cellH);
-            }
-          }
+          drawPixelArt(midBossMap, palettes.midBoss, {
+            width: e.w,
+            height: e.h
+          });
 
         } else if (e.isMissile) {
-          const rows = missileMap.length;
-          const cols = missileMap[0].length;
-          const cellW = e.w / cols;
-          const cellH = e.h / rows;
-
-          for (let y = 0; y < rows; y++) {
-            for (let x = 0; x < cols; x++) {
-              const v = missileMap[rows - 1 - y][x]; // 下から参照（上下反転）
-              if (v === 0) continue;
-              ctx.fillStyle = (v === 1) ? "#ffffff" : "#ff3333";
-              ctx.fillRect(x * cellW, y * cellH, cellW, cellH);
-            }
-          }
+          drawPixelArt(missileMap, palettes.missile, {
+            width: e.w,
+            height: e.h,
+            flipVertical: true
+          });
 
           const flicker = (frameCount % 6) - 3;
           ctx.fillStyle = "rgba(255,180,0,0.7)";
@@ -1246,24 +1240,24 @@
       }
     }
 
-function drawClearExplosionPhase() {
-  // 背景黒
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+    function drawClearExplosionPhase() {
+      // 背景黒
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 花火爆発描画
-  drawFinalBigExplosion();
+      // 花火爆発描画
+      drawFinalBigExplosion();
 
-  // 爆発終了後の白フラッシュ
-  if (clearFlashTimer > 0) {
-    const alpha = clearFlashTimer / 15;
-    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }
+      // 爆発終了後の白フラッシュ
+      if (clearFlashTimer > 0) {
+        const alpha = clearFlashTimer / 15;
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
 
-  // 最後に自機を必ず描く（常に表示）
-  drawPlayer();
-}
+      // 最後に自機を必ず描く（常に表示）
+      drawPlayer();
+    }
 
     function updateCruisePhase() {
       clearFrame++;
