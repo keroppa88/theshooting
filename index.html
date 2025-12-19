@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>The ShootingⅡ</title>
+  <title>The Shooting</title>
   <style>
     body {
       margin: 0;
@@ -26,16 +26,6 @@
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
-
-    // クリック/タップでも開始できるようにする（フォーカス問題対策）
-    canvas.tabIndex = 0;
-    canvas.style.outline = "none";
-    canvas.focus();
-    canvas.addEventListener("pointerdown", () => {
-      unlockBgm();
-      if (!gameStarted && clearPhase === 0 && !gameCleared) startGame();
-    });
-
 
     // ===== 効果音 =====
     const shootSound         = new Audio("Game/shoot.mp3");
@@ -103,57 +93,56 @@
     // ===== モアイ（最終ボス）のドットマップ =====
     // 0: 何もなし, 1: 白, 2: 薄グレー, 3: 濃グレー, 5: 黒
     const moaiMapFinalBoss = [
-      [0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 6, 0, 6, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 7, 0, 0, 0, 8, 6, 6, 6, 6, 6, 8, 0, 0, 0, 7, 0, 0, 0],
-      [0, 0, 7, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 7, 0, 0, 0],
-      [0, 7, 0, 7, 0, 0, 6, 6, 6, 6, 6, 6, 6, 0, 0, 7, 0, 7, 0, 0],
-      [0, 7, 0, 7, 0, 0, 9, 9, 9, 9, 9, 9, 9, 0, 0, 7, 0, 7, 0, 0],
-      [0, 7, 0, 0, 7, 7, 6, 6, 6, 10, 6, 6, 6, 7, 7, 0, 0, 7, 0, 0],
-      [0, 7, 0, 0, 0, 0, 6, 6, 6, 10, 6, 6, 6, 0, 0, 0, 0, 7, 0, 0],
-      [0, 0, 7, 7, 7, 7, 6, 6, 6, 10, 6, 6, 6, 7, 7, 7, 7, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 6, 6, 6, 10, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 7, 7, 7, 7, 6, 6, 6, 10, 6, 6, 6, 7, 7, 7, 7, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 6, 6, 6, 10, 6, 6, 6, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 7, 7, 7, 7, 6, 6, 6, 10, 6, 6, 6, 7, 7, 7, 7, 0, 0, 0],
-      [0, 7, 0, 0, 0, 0, 6, 6, 6, 10, 6, 6, 6, 0, 0, 0, 0, 7, 0, 0],
-      [7, 0, 0, 7, 7, 7, 6, 6, 6, 10, 6, 6, 6, 7, 7, 7, 0, 0, 7, 0],
-      [0, 0, 7, 0, 0, 0, 6, 6, 6, 10, 6, 6, 6, 0, 0, 0, 7, 0, 0, 0],
-      [0, 0, 7, 0, 0, 0, 6, 6, 6, 10, 6, 6, 6, 0, 0, 0, 7, 0, 0, 0],
-      [0, 0, 7, 0, 0, 0, 0, 6, 6, 10, 6, 6, 0, 0, 0, 0, 7, 0, 0, 0],
-      [0, 0, 7, 0, 0, 0, 0, 0, 6, 10, 6, 0, 0, 0, 0, 0, 7, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 2, 2, 2, 2, 2, 2, 2, 2, 0],
+      [2, 2, 2, 2, 2, 2, 2, 2, 2, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 2, 3],
+      [1, 1, 1, 1, 1, 1, 1, 1, 2, 3],
+      [1, 2, 2, 3, 3, 3, 3, 3, 3, 3],
+      [1, 1, 5, 5, 3, 3, 5, 5, 3, 3],
+      [1, 1, 2, 2, 3, 3, 3, 3, 3, 3],
+      [1, 1, 2, 2, 1, 3, 1, 2, 2, 3],
+      [1, 1, 2, 2, 1, 3, 1, 2, 2, 3],
+      [1, 1, 2, 2, 1, 3, 1, 2, 2, 3],
+      [1, 1, 2, 2, 1, 3, 1, 2, 2, 3],
+      [1, 1, 1, 2, 3, 3, 2, 2, 2, 3],
+      [1, 1, 2, 1, 1, 1, 1, 2, 2, 3],
+      [1, 1, 2, 5, 5, 5, 5, 2, 2, 3],
+      [1, 1, 2, 5, 5, 5, 5, 2, 2, 3],
+      [1, 1, 2, 5, 5, 5, 5, 2, 2, 3],
+      [1, 1, 2, 5, 5, 5, 5, 2, 2, 3],
+      [0, 1, 2, 2, 5, 5, 2, 2, 2, 0],
+      [0, 1, 1, 1, 1, 1, 1, 2, 2, 0],
+      [0, 1, 1, 1, 1, 1, 1, 2, 2, 0],
+      [0, 0, 0, 2, 2, 2, 2, 2, 0, 0]
     ];
 
     // ===== 中ボス（飛行機）ドットマップ =====
     // 0: 透明, 7: ごく薄い水色, 8: 濃いグレー, 10: 灰色
     const midBossMap = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0],
-      [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7],
-      [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7],
-      [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
-      [0, 0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0, 0],
-      [0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 0, 0, 7, 7, 7, 0, 0, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 7, 10, 7, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,7,7,7,7,7,8,7,7,7,7,7,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,7,7,7,7,8,7,7,7,7,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+      [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+      [0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+      [0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,7,10,7,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,10,10,10,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,10,10,10,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     ];
 
     // ===== 自機ドットマップ =====
@@ -296,12 +285,6 @@
     let powerUpTimer  = 0;  // フレーム
 
     let enemySpawnTimer = 0;
-
-    // 追加敵のスポーン制御
-    let trailSpawnTimer = 0;   // 5〜10秒
-    let hardTwinSpawnTimer = 0; // score>500 で稼働
-    let zigzagSpawnTimer = 0;  // score>900 で稼働
-
     let score = 0;
     let nextBossScore = 300;
     let frameCount = 0;
@@ -347,10 +330,7 @@
         shotPattern: isDoublePattern ? "double" : "single",
         diagDir: (Math.random() < 0.5 ? -1 : 1),
         shotTimer: 0,
-        shotsLeft: 0,
-        // trail (visual only)
-        trail: [],
-        trailColor: TRAIL_COLORS[(Math.random()*TRAIL_COLORS.length)|0]
+        shotsLeft: 0
       };
 
       if (canShoot) {
@@ -360,104 +340,6 @@
       }
 
       enemies.push(e);
-    }
-
-    // ===== 追加通常敵（色違い） =====
-    const TRAIL_COLORS = [
-      "rgba(255,255,255,0.85)", // white
-      "rgba(255,0,0,0.85)",     // red
-      "rgba(255,105,180,0.85)", // pink
-      "rgba(120,200,255,0.85)", // light blue
-      "rgba(0,120,255,0.85)",   // blue
-      "rgba(0,255,200,0.85)",   // teal
-      "rgba(150,255,80,0.85)",  // yellow-green
-      "rgba(190,120,255,0.85)", // bright purple
-      "rgba(255,255,0,0.85)",   // yellow
-      "rgba(255,165,0,0.85)"    // orange
-    ];
-
-    function randInt(min, max) {
-      return (min + Math.random() * (max - min + 1)) | 0;
-    }
-
-    // ①軌跡を描く敵（2秒に1回・直進弾）
-    function spawnTrailEnemy() {
-      const w = 30;
-      const h = 30;
-      const x = Math.random() * (canvas.width - w);
-      const y = -h;
-
-      enemies.push({
-        type: "trail_enemy",
-        x, y, w, h,
-        speed: 2,
-        isBoss: false,
-        isFinalBoss: false,
-        isShooter: false,
-        isMissile: false,
-        color: "#ffdd44",
-        trail: [],
-        trailColor: TRAIL_COLORS[randInt(0, TRAIL_COLORS.length - 1)],
-        shotTimer: 120
-      });
-    }
-
-    // ②ジグザグ敵（3秒に1回・斜め±30度に2発）
-    function spawnZigzagEnemy() {
-      const w = 30;
-      const h = 30;
-      const x = Math.random() * (canvas.width - w);
-      const y = -h;
-
-      enemies.push({
-        type: "zigzag_enemy",
-        x, y, w, h,
-        speed: 1.8,
-        baseX: x,
-        zigPhase: Math.random() * Math.PI * 2,
-        zigAmp: 70,
-        isBoss: false,
-        isFinalBoss: false,
-        isShooter: false,
-        isMissile: false,
-        color: "#66ccff",
-        shotTimer: 180
-      });
-    }
-
-    // ③横に2体ぶんの頑丈すぎる敵（HP=35、攻撃なし）
-    const hardTwinMap = [
-      [0,0,0,0,0,0,0,0],
-      [1,1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1,1]
-    ];
-
-    function spawnHardTwin() {
-      const cols = hardTwinMap[0].length;
-      const rows = hardTwinMap.length;
-
-      const w = 120;
-      const h = 60; // 横長で固定
-      const x = Math.random() * (canvas.width - w);
-      const y = -h;
-
-      enemies.push({
-        type: "hard_twin",
-        x, y, w, h,
-        speed: 1.0,
-        isBoss: false,
-        isFinalBoss: false,
-        isShooter: false,
-        isMissile: false,
-        hp: 35
-      });
     }
 
     function spawnMissilePair() {
@@ -501,8 +383,7 @@
         isFinalBoss: false,
         isShooter: false,
         isMissile: false,
-        hp: 20,
-        shotTimer: 180
+        hp: 20
       });
     }
 
@@ -529,7 +410,6 @@
       const baseW = 200;
       let w = baseW / 3;
       w *= 1.5; // 1.5倍
-            w *= 2; // さらに2倍（合計で現状の2倍にする）
       const h = w * (rows / cols);
 
       const x = (canvas.width - w) / 2;
@@ -542,7 +422,7 @@
         isFinalBoss: true,
         isShooter: false,
         isMissile: false,
-        hp: 100,
+        hp: 50,
         moveDir: 1,
         shotTimer: 180
       });
@@ -749,9 +629,14 @@
       const speed = 6;
       const angle = Math.PI / 6;
 
-      // 虫ボス：中央下寄りから発射
-      const cx = boss.x + boss.w * 0.5;
-      const cy = boss.y + boss.h * 0.78;
+      const cols = moaiMapFinalBoss[0].length;
+      const rows = moaiMapFinalBoss.length;
+
+      const mouthNX = 4.5 / cols;
+      const mouthNY = 14.5 / rows;
+
+      const cx = boss.x + boss.w * mouthNX;
+      const cy = boss.y + boss.h * mouthNY;
 
       enemyBullets.push({ x: cx, y: cy, w: 4, h: 10, vx: 0, vy: speed });
       enemyBullets.push({
@@ -842,27 +727,6 @@
           spawnEnemy();
           enemySpawnTimer = 40;
         }
-
-        // ①軌跡：直進通常敵（spawnEnemyで生成される敵）は全て軌跡を描くため、個別スポーンは不要
-
-        // ③頑丈な敵：score>500 で稼働
-        if (score > 500) {
-          hardTwinSpawnTimer--;
-          if (hardTwinSpawnTimer <= 0) {
-            spawnHardTwin();
-            hardTwinSpawnTimer = randInt(60 * 7, 60 * 12);
-          }
-        }
-
-        // ②ジグザグ敵：score>900 で稼働
-        if (score > 900) {
-          zigzagSpawnTimer--;
-          if (zigzagSpawnTimer <= 0) {
-            spawnZigzagEnemy();
-            zigzagSpawnTimer = randInt(60 * 3, 60 * 5);
-          }
-        }
-
       } else {
         if (!finalBossSpawned) {
           if (finalDelayFrames > 0) {
@@ -877,78 +741,8 @@
       for (let i = enemies.length - 1; i >= 0; i--) {
         const e = enemies[i];
 
-        // 追加敵の個別挙動
-        if (e.type === "trail_enemy") {
-          e.y += e.speed;
-
-          // 軌跡（当たり判定なし、4秒保持）
-          e.trail.push({ x: e.x + e.w/2, y: e.y + e.h/2, life: 240 });
-          for (let tt = e.trail.length - 1; tt >= 0; tt--) {
-            e.trail[tt].life--;
-            if (e.trail[tt].life <= 0) e.trail.splice(tt, 1);
-          }
-
-          // 2秒に1回、直進弾
-          e.shotTimer--;
-          if (e.shotTimer <= 0) {
-            enemyBullets.push({ x: e.x + e.w/2 - 2, y: e.y + e.h, w: 4, h: 10, vx: 0, vy: 5 });
-            e.shotTimer = 120;
-          }
-
-          if (e.y > canvas.height + 50) {
-            enemies.splice(i, 1);
-            continue;
-          }
-        } else if (e.type === "zigzag_enemy") {
-          e.y += e.speed;
-
-          // ジグザグ（左右に振る）
-          e.zigPhase += 0.08;
-          e.x = e.baseX + Math.sin(e.zigPhase) * e.zigAmp;
-
-          if (e.x < 0) { e.x = 0; e.baseX = e.x; }
-          if (e.x + e.w > canvas.width) { e.x = canvas.width - e.w; e.baseX = e.x; }
-
-          // 3秒に1回、斜め±30度に2発
-          e.shotTimer--;
-          if (e.shotTimer <= 0) {
-            const speed = 5;
-            const ang = Math.PI / 6; // 30deg
-            const cx = e.x + e.w/2 - 2;
-            const cy = e.y + e.h/2;
-
-            enemyBullets.push({ x: cx, y: cy, w: 4, h: 10, vx: -Math.sin(ang) * speed, vy: Math.cos(ang) * speed });
-            enemyBullets.push({ x: cx, y: cy, w: 4, h: 10, vx:  Math.sin(ang) * speed, vy: Math.cos(ang) * speed });
-            e.shotTimer = 180;
-          }
-
-          if (e.y > canvas.height + 50) {
-            enemies.splice(i, 1);
-            continue;
-          }
-        } else if (e.type === "hard_twin") {
-          e.y += e.speed;
-          if (e.hitFlash > 0) e.hitFlash--;
-          if (e.y > canvas.height + 50) {
-            enemies.splice(i, 1);
-          }
-          continue;
-        }
-
         if (e.isMissile) {
           e.y += e.speed;
-
-          // trail (visual only) for straight enemies
-          if (Array.isArray(e.trail)) {
-            e.trail.push({ x: e.x + e.w / 2, y: e.y + e.h / 2, life: 240 }); // 4 seconds
-            for (let t = e.trail.length - 1; t >= 0; t--) {
-              e.trail[t].life--;
-              if (e.trail[t].life <= 0) e.trail.splice(t, 1);
-            }
-            // cap length (safety)
-            if (e.trail.length > 260) e.trail.splice(0, e.trail.length - 260);
-          }
-
           if (e.y > canvas.height) {
             enemies.splice(i, 1);
             continue;
@@ -970,33 +764,9 @@
           }
         } else {
           e.y += e.speed;
-          // 直進通常敵は全て軌跡（当たり判定なし、4秒保持）
-          if (!e.isBoss && !e.isFinalBoss && !e.isMissile && Array.isArray(e.trail)) {
-            e.trail.push({ x: e.x + e.w/2, y: e.y + e.h/2, life: 240 });
-            for (let t = e.trail.length - 1; t >= 0; t--) {
-              e.trail[t].life--;
-              if (e.trail[t].life <= 0) e.trail.splice(t, 1);
-            }
-            // 念のため上限（重くならないように）
-            if (e.trail.length > 260) e.trail.splice(0, e.trail.length - 260);
-          }
-
           if (e.y > canvas.height) {
             enemies.splice(i, 1);
             continue;
-          }
-
-          // 中ボス：3秒に1回、直進弾を2発
-          if (e.isBoss && !e.isFinalBoss) {
-            if (typeof e.shotTimer !== "number") e.shotTimer = 180;
-            e.shotTimer--;
-            if (e.shotTimer <= 0) {
-              const speed = 6;
-              const y0 = e.y + e.h;
-              enemyBullets.push({ x: e.x + e.w * 0.35, y: y0, w: 4, h: 10, vx: 0, vy: speed });
-              enemyBullets.push({ x: e.x + e.w * 0.65, y: y0, w: 4, h: 10, vx: 0, vy: speed });
-              e.shotTimer = 180;
-            }
           }
 
           if (e.isShooter && !e.isBoss && e.shotsLeft > 0) {
@@ -1053,23 +823,6 @@
               if (e.hp <= 0) {
                 playSound(playerExplodeSound);
                 startClearSequence(exX, exY); // ここで15重リング演出へ
-              }
-              break;
-            }
-
-            // 頑丈な敵（横2体）：HP=35
-            if (e.type === "hard_twin") {
-              if (typeof e.hp !== "number") e.hp = 35;
-              e.hp--;
-              e.hitFlash = 6;
-              if (e.hp <= 0) {
-                enemies.splice(i, 1);
-                score += 40;
-                playSound(enemyExplodeSound);
-                createExplosion(exX, exY, true);
-                handleScoreEvents();
-                if (!finalMode) checkBossSpawn();
-                tryStartFinalMode();
               }
               break;
             }
@@ -1277,8 +1030,8 @@
 
       ctx.fillStyle = "#00ffff";
       ctx.textAlign = "center";
-      ctx.font = "40px monospace";
-      ctx.fillText("THE SHOOTINGⅡ", canvas.width / 2, 160);
+      ctx.font = "32px monospace";
+      ctx.fillText("THE SHOOTING", canvas.width / 2, 160);
 
       ctx.font = "14px monospace";
       ctx.fillStyle = "#88ff88";
@@ -1293,7 +1046,7 @@
 
       ctx.font = "12px monospace";
       ctx.fillStyle = "#cccccc";
-      ctx.fillText("", canvas.width / 2, 350);
+      ctx.fillText("SPACE / ENTER / A / START", canvas.width / 2, 350);
 
       ctx.save();
       ctx.translate(canvas.width / 2, 480);
@@ -1324,33 +1077,6 @@
       }
     }
 
-    function drawEnemyTrails() {
-      ctx.save();
-      ctx.lineWidth = 3;
-      ctx.lineCap = "round";
-      ctx.globalCompositeOperation = "lighter";
-
-      for (const e of enemies) {
-        if (!Array.isArray(e.trail) || e.trail.length < 2) continue;
-        if (!e.trail || e.trail.length < 2) continue;
-
-        ctx.strokeStyle = e.trailColor || "rgba(255,255,0,0.8)";
-        ctx.beginPath();
-
-        for (let i = 0; i < e.trail.length; i++) {
-          const p = e.trail[i];
-          const a = (p.life / 240) * 0.9;
-          ctx.globalAlpha = a;
-          if (i === 0) ctx.moveTo(p.x, p.y);
-          else ctx.lineTo(p.x, p.y);
-        }
-        ctx.stroke();
-      }
-
-      ctx.restore();
-    }
-
-
     function drawEnemies() {
       for (const e of enemies) {
         ctx.save();
@@ -1364,15 +1090,14 @@
 
           for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
-              const v = moaiMapFinalBoss[rows - 1 - y][x]; // 上下反転
+              const v = moaiMapFinalBoss[y][x];
               if (v === 0) continue;
 
               let col;
-              if (v === 6)      col = "#4b2e1e"; // 濃い茶色
-              else if (v === 7) col = "#8b5a2b"; // 茶色
-              else if (v === 8) col = "#ff9933"; // オレンジ
-              else if (v === 9) col = "#9933cc"; // 紫
-              else if (v === 10) col = "#555555"; // 濃いグレー
+              if (v === 1)      col = "#ffffff";
+              else if (v === 2) col = "#c0c0c0";
+              else if (v === 3) col = "#808080";
+              else if (v === 5) col = "#000000";
 
               ctx.fillStyle = col;
               ctx.fillRect(x * cellW, y * cellH, cellW, cellH);
@@ -1391,10 +1116,9 @@
               if (v === 0) continue;
 
               let col;
-              if (v === 7)      col = "#bfe9ff"; // 薄い青
-              else if (v === 4) col = "#2a66ff"; // 濃い青
-              else if (v === 5) col = "#9aa0a6"; // グレー
-              else if (v === 10) col = "#555555"; // 濃いグレー
+              if (v === 7)       col = "#d7efff";
+              else if (v === 8)  col = "#555555";
+              else if (v === 10) col = "#666666";
               else continue;
 
               ctx.fillStyle = col;
@@ -1429,25 +1153,9 @@
           ctx.arc(e.w / 2 + 3, -17 + flicker * 0.4, 3, 0, Math.PI * 2);
           ctx.fill();
 
-        } else if (e.type === "hard_twin") {
-          const rows = hardTwinMap.length;
-          const cols = hardTwinMap[0].length;
-          const cellW = e.w / cols;
-          const cellH = e.h / rows;
-          const flash = (e.hitFlash > 0);
-
-          for (let yy = 0; yy < rows; yy++) {
-            for (let xx = 0; xx < cols; xx++) {
-              const v = hardTwinMap[yy][xx];
-              if (v === 0) continue;
-              ctx.fillStyle = "#9aa0a6";
-              ctx.fillRect(xx * cellW, yy * cellH, cellW, cellH);
-            }
-          }
-
         } else {
           ctx.translate(e.w / 2, e.h / 2);
-          ctx.fillStyle = e.color ? e.color : (e.isShooter ? "#ff66aa" : "#f33");
+          ctx.fillStyle = e.isShooter ? "#ff66aa" : "#f33";
           ctx.fillRect(-4, -12, 8, 24);
           ctx.fillRect(-14, -3, 28, 6);
           ctx.fillRect(-5, 7, 10, 4);
@@ -1610,9 +1318,6 @@ function drawClearExplosionPhase() {
       score = 0;
       nextBossScore = 300;
       enemySpawnTimer = 30;
-      trailSpawnTimer = randInt(60 * 5, 60 * 10);
-      hardTwinSpawnTimer = randInt(60 * 6, 60 * 12);
-      zigzagSpawnTimer = randInt(60 * 6, 60 * 12);
       player.x = canvas.width / 2 - 15;
       player.y = canvas.height - 80;
       player.fireCooldown = 0;
@@ -1643,9 +1348,6 @@ function drawClearExplosionPhase() {
       score = 0;
       nextBossScore = 300;
       enemySpawnTimer = 30;
-      trailSpawnTimer = randInt(60 * 5, 60 * 10);
-      hardTwinSpawnTimer = randInt(60 * 6, 60 * 12);
-      zigzagSpawnTimer = randInt(60 * 6, 60 * 12);
       player.fireCooldown = 0;
 
       finalMode = false;
@@ -1707,7 +1409,6 @@ function drawClearExplosionPhase() {
           drawPlayer();
           drawBullets();
           drawEnemyBullets();
-          drawEnemyTrails();
           drawEnemies();
           drawExplosions();
           drawStarsPower();
@@ -1717,7 +1418,6 @@ function drawClearExplosionPhase() {
           drawPlayer();
           drawBullets();
           drawEnemyBullets();
-          drawEnemyTrails();
           drawEnemies();
           drawExplosions();
           drawUI();
